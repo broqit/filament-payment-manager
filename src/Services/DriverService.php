@@ -1,0 +1,74 @@
+<?php
+
+namespace AmidEsfahani\FilamentPaymentManager\Services;
+
+use Illuminate\Support\Facades\File;
+use Money\Currencies\ISOCurrencies;
+use Money\Currency;
+
+class DriverService
+{
+    public static function getAvailableDrivers(): array
+    {
+        return self::getDriverOptions();
+    }
+
+    protected static string $configPath = 'vendor/shetabit/multipay/config/payment.php';
+
+    public static function getDriverDefaultConfig(?string $driver): array
+    {
+        if (! $driver) {
+            return [];
+        }
+
+        $path = base_path(static::$configPath);
+
+        if (! File::exists($path)) {
+            return [];
+        }
+
+        $config = include $path;
+
+        if (! isset($config['drivers'][$driver]) || ! is_array($config['drivers'][$driver])) {
+            return [];
+        }
+
+        // return config key => default value
+        return $config['drivers'][$driver];
+    }
+
+    protected static function getDriverOptions(): array
+    {
+        $driversPath = base_path('vendor/shetabit/multipay/src/Drivers');
+
+        if (! File::isDirectory($driversPath)) {
+            return [];
+        }
+
+        $directories = File::directories($driversPath);
+
+        // Convert full paths into driver names (folder names)
+        return collect($directories)
+            ->mapWithKeys(function ($dir) {
+                $name = basename($dir);
+
+                return [mb_strtolower($name) => __(ucwords(str_replace(['-', '_'], ' ', $name)))];
+            })
+            ->toArray();
+    }
+
+    public static function currencies()
+    {
+        $currencies = new ISOCurrencies;
+        $list = [];
+
+        foreach ($currencies as $currency) {
+            /** @var Currency $currency */
+            $list[$currency->getCode()] = $currency->getCode();
+        }
+
+        ksort($list);
+
+        return $list;
+    }
+}
