@@ -10,7 +10,7 @@ return [
     | if no specific callback URL is set for a gateway.
     |
     */
-    'default_callback_url' => env('PAYMENT_CALLBACK_URL', url('/payment/callback')),
+    'default_callback_url' => env('PAYMENT_CALLBACK_URL'),
 
     /*
     |--------------------------------------------------------------------------
