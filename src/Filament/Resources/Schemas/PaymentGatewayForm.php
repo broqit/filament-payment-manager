@@ -88,6 +88,11 @@ class PaymentGatewayForm
                             ->placeholder(config('filament-payment-manager.default_callback_url'))
                             ->helperText(__('Leave empty to use default callback URL from config'))
                             ->columnSpanFull(),
+                        
+                        // todo:
+                        // user can choose to use callback_url
+                        // in callback_url user can use additional params
+                        // also callback_url can be full url or route name or route url like localhost:8000/payments/callback or payments.callback or payments
 
                         Select::make('redirect_form_mode')
                             ->label(__('Redirect Form Mode'))

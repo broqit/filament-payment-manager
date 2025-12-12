@@ -50,22 +50,19 @@ class PaymentManagerService
     /**
      * Create a payment
      */
-    public function createPayment(float $amount, string $driver = null): Invoice
+    public function createPayment(float $amount, ?string $driver = null): \Shetabit\Multipay\Payment
     {
         if (!$driver) {
             $gateway = PaymentGateway::default()->active()->firstOrFail();
             $driver = $gateway->driver;
         } else {
-            $gateway = PaymentGateway::where('driver', $driver)
-                ->active()
-                ->firstOrFail();
+            $gateway = PaymentGateway::where('driver', $driver)->active()->firstOrFail();
         }
 
         // Ensure gateway is registered
         $this->registerGateway($gateway);
 
-        return Payment::via($driver)
-            ->amount($amount);
+        return Payment::via($driver)->amount($amount);
     }
 
     /**
@@ -121,7 +118,7 @@ class PaymentManagerService
     /**
      * Verify payment
      */
-    public function verifyPayment(string $driver = null)
+    public function verifyPayment(?string $driver = null)
     {
         if (!$driver) {
             $gateway = PaymentGateway::default()->active()->firstOrFail();
