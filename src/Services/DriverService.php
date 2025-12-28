@@ -20,21 +20,10 @@ class DriverService
         if (! $driver) {
             return [];
         }
-
-        $path = base_path(static::$configPath);
-
-        if (! File::exists($path)) {
-            return [];
-        }
-
-        $config = include $path;
-
-        if (! isset($config['drivers'][$driver]) || ! is_array($config['drivers'][$driver])) {
-            return [];
-        }
-
-        // return config key => default value
-        return $config['drivers'][$driver];
+    
+        $cfg = config("payment.drivers.$driver");
+    
+        return is_array($cfg) ? $cfg : [];
     }
 
     protected static function getDriverOptions(): array
