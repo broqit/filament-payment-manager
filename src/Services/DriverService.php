@@ -12,9 +12,7 @@ class DriverService
     {
         return self::getDriverOptions();
     }
-
-    protected static string $configPath = 'vendor/shetabit/multipay/config/payment.php';
-
+    
     public static function getDriverDefaultConfig(?string $driver): array
     {
         if (! $driver) {
@@ -28,21 +26,16 @@ class DriverService
 
     protected static function getDriverOptions(): array
     {
-        $driversPath = base_path('vendor/shetabit/multipay/src/Drivers');
+        $drivers = config('payment.drivers', []);
 
-        if (! File::isDirectory($driversPath)) {
+        if (! is_array($drivers)) {
             return [];
         }
 
-        $directories = File::directories($driversPath);
-
-        // Convert full paths into driver names (folder names)
-        return collect($directories)
-            ->mapWithKeys(function ($dir) {
-                $name = basename($dir);
-
-                return [mb_strtolower($name) => __(ucwords(str_replace(['-', '_'], ' ', $name)))];
-            })
+        return collect(array_keys($drivers))
+            ->mapWithKeys(fn ($name) => [
+                mb_strtolower($name) => __(ucwords(str_replace(['-', '_'], ' ', $name))),
+            ])
             ->toArray();
     }
 
